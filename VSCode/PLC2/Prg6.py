@@ -1,5 +1,5 @@
 bands = list()
-filename = "bands.txt"
+filename = 'bands.txt'
 with open(filename) as fin:
     for line in fin:
         bands.append(line.strip())
