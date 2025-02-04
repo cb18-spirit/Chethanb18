@@ -1,23 +1,33 @@
 {
-    "name": "YatraMarga",
-    "version": "1.0.0",
-    "description": "A travel website showcasing Karnataka's tourist attractions.",
-    "main": "index.js",
-    "scripts": {
-      "start": "react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test",
-      "eject": "react-scripts eject"
-    },
-    "dependencies": {
-      "react": "^18.0.0",
-      "react-dom": "^18.0.0",
-      "react-scripts": "5.0.0",
-      "react-router-dom": "^6.0.0",
-      "axios": "^0.27.2"
-    },
-    "devDependencies": {},
-    "author": "Your Name",
-    "license": "MIT"
+  "name": "yatramarga",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-scripts": "^3.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "YatraMarga React App",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
-  
+}

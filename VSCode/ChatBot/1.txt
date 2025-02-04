@@ -1,18 +1,22 @@
-YatraMarga/
-├── assets/
-│   ├── images/
-│   └── styles/
-├── components/
-│   ├── Header.js
-│   ├── Footer.js
-│   └── SearchBar.js
-├── pages/
-│   ├── index.js
-│   └── destination.js
+yatramarga/
+├── node_modules/
 ├── public/
-│   └── images/
-├── utils/
-│   └── api.js
+│   ├── index.html
+├── src/
+│   ├── assets/
+│   │   ├── images/
+│   │   └── styles/
+│   ├── components/
+│   │   ├── Header.js
+│   │   ├── Footer.js
+│   │   └── SearchBar.js
+│   ├── pages/
+│   │   ├── HomePage.js
+│   │   └── DestinationPage.js
+│   ├── utils/
+│   │   └── api.js
+│   ├── App.js
+│   ├── index.js
 ├── .gitignore
 ├── package.json
 └── README.md
