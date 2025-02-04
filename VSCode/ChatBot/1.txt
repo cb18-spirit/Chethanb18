@@ -1,0 +1,18 @@
+YatraMarga/
+├── assets/
+│   ├── images/
+│   └── styles/
+├── components/
+│   ├── Header.js
+│   ├── Footer.js
+│   └── SearchBar.js
+├── pages/
+│   ├── index.js
+│   └── destination.js
+├── public/
+│   └── images/
+├── utils/
+│   └── api.js
+├── .gitignore
+├── package.json
+└── README.md
