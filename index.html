@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YatraMarga - Explore Karnataka</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>YatraMarga</h1>
+        <p>Explore the beauty of Karnataka</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="place-search" placeholder="Search for a place...">
+        <button onclick="searchLocation()">Search</button>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="script.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>
+</body>
+</html>
