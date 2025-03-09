@@ -1,28 +1,38 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Import User model for token storage
+const jwt = require("jsonwebtoken");
 
 const generateAccessToken = (userId) => {
-    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRES_IN || "1h"
+    });
 };
 
 const generateRefreshToken = async (userId) => {
-    const refreshToken = jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
-
-    // Store refresh token in database
-    await User.findByIdAndUpdate(userId, { refreshToken });
-
-    return refreshToken;
+    return jwt.sign({ id: userId }, process.env.JWT_REFRESH_SECRET, {
+        expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || "7d"
+    });
 };
 
-const verifyRefreshToken = async (token) => {
+const verifyAccessToken = (token) => {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-        const user = await User.findById(decoded.id);
-        if (!user || user.refreshToken !== token) return null;
-        return user;
-    } catch (error) {
-        return null;
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        console.error("Error verifying access token:", err.message);
+        return null; // Return null if verification fails
     }
 };
 
-module.exports = { generateAccessToken, generateRefreshToken, verifyRefreshToken };
+const verifyRefreshToken = (token) => {
+    try {
+        return jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    } catch (err) {
+        console.error("Error verifying refresh token:", err.message);
+        return null; // Return null if verification fails
+    }
+};
+
+module.exports = {
+    generateAccessToken,
+    generateRefreshToken,
+    verifyAccessToken,
+    verifyRefreshToken
+};

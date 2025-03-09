@@ -2,33 +2,21 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
-    let token;
+    let token = req.headers.authorization;
 
-    if (req.headers.authorization?.startsWith("Bearer")) {
-        token = req.headers.authorization.split(" ")[1];
-    }
-
-    if (!token) {
-        return res.status(401).json({ message: "Access denied: No token provided" });
+    if (!token || !token.startsWith("Bearer ")) {
+        return res.status(401).json({ message: "Not authorized, no token" });
     }
 
     try {
+        token = token.split(" ")[1]; // Get token from "Bearer token"
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        if (!decoded.sub) {
-            return res.status(401).json({ message: "Invalid token structure" });
-        }
-
-        req.user = await User.findById(decoded.sub).select("-password");
-
-        if (!req.user) {
-            return res.status(401).json({ message: "User not found, invalid token" });
-        }
-
+        req.user = await User.findById(decoded.id).select("-password");
         next();
     } catch (error) {
-        console.error("Token verification failed:", error.message);
-        res.status(401).json({ message: "Invalid or expired token" });
+        console.error("Error verifying token:", error);
+        res.status(401).json({ message: "Not authorized, token failed" });
     }
 };
 
