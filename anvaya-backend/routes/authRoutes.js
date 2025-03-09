@@ -2,11 +2,12 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/User');
-const { loginUser } = require("../controllers/userController"); // ✅ Import loginUser correctly
-const authMiddleware = require('../middleware/authMiddleware');
-const { generateToken } = require('../utils/jwtUtils'); // ✅ Move generateToken to a separate file
+const { loginUser, getProfile } = require("../controllers/userController"); // ✅ Ensure correct import
+const { protect } = require('../middleware/authMiddleware'); // ✅ Ensure correct import
+const { generateToken } = require('../utils/jwtUtils'); // ✅ Ensure correct import
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+
 const router = express.Router();
 
 // @route    POST /api/auth/register
@@ -59,7 +60,7 @@ router.post("/login", loginUser);
 // @route    GET /api/auth/me
 // @desc     Get logged-in user details
 // @access   Private (Requires JWT)
-router.get('/me', authMiddleware, async (req, res) => {
+router.get('/me', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password'); // Exclude password
         res.json(user);
@@ -68,7 +69,6 @@ router.get('/me', authMiddleware, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-
 
 // 🔹 Forgot Password Route
 router.post('/forgot-password', async (req, res) => {
@@ -111,6 +111,14 @@ router.post('/forgot-password', async (req, res) => {
     }
 });
 
+// @route    GET /api/auth/profile
+// @desc     Get user profile
+// @access   Private
+router.get('/profile', protect, getProfile);
+
+// @route    POST /api/auth/reset-password/:token
+// @desc     Reset password
+// @access   Public
 router.post('/reset-password/:token', async (req, res) => {
     const { password } = req.body;
     const { token } = req.params;
@@ -146,6 +154,43 @@ router.post('/reset-password/:token', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send("Server error");
+    }
+});
+
+// @route    POST /api/auth/refresh-token
+// @desc     Refresh access token
+// @access   Public
+router.post('/refresh-token', async (req, res) => {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+        return res.status(400).json({ message: "Refresh token is required" });
+    }
+
+    try {
+        const user = await verifyRefreshToken(refreshToken);
+
+        if (!user) {
+            return res.status(401).json({ message: "Invalid or expired refresh token" });
+        }
+
+        const newAccessToken = generateAccessToken(user.id);
+        res.json({ accessToken: newAccessToken });
+
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// @route    POST /api/auth/logout
+// @desc     Logout user & revoke refresh token
+// @access   Private
+router.post('/logout', protect, async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.user.id, { refreshToken: null }); // Clear stored refresh token
+        res.json({ message: "Logged out successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
     }
 });
 

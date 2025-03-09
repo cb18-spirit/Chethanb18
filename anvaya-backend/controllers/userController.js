@@ -1,28 +1,54 @@
-const User = require("../models/User");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const User = require("../models/User");
+const { generateAccessToken, generateRefreshToken } = require("../utils/jwtUtils");
 
-exports.loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        let user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ msg: "Invalid Credentials" });
-        }
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ msg: "Invalid email or password" });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: "Invalid Credentials" });
-        }
+        const isMatch = await user.matchPassword(password);
+        if (!isMatch) return res.status(400).json({ msg: "Invalid email or password" });
 
-        const payload = { user: { id: user.id } };
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" }, (err, token) => {
-            if (err) throw err;
-            res.json({ token, user });
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        user.refreshToken = refreshToken;
+        await user.save();
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
         });
+
+        res.json({
+            accessToken,
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email,
+            }
+        });
+
     } catch (err) {
-        console.error(err.message);
+        console.error("Login Error:", err);
         res.status(500).send("Server error");
     }
 };
+
+const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).select("-password");
+        if (!user) return res.status(404).json({ msg: "User not found" });
+
+        res.json(user);
+    } catch (err) {
+        console.error("Profile Fetch Error:", err);
+        res.status(500).send("Server error");
+    }
+};
+
+module.exports = { loginUser, getProfile };
