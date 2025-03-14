@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const { generateAccessToken, generateRefreshToken } = require("../utils/jwtUtils");
 
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
 

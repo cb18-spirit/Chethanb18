@@ -22,7 +22,7 @@ router.post("/new", protect, async (req, res) => {
         res.status(200).json(chat);
     } catch (error) {
         console.error("Chat Creation Error:", error.message);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
@@ -33,7 +33,7 @@ router.get("/", protect, async (req, res) => {
         res.json(chats);
     } catch (error) {
         console.error("Chat Fetch Error:", error.message);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
@@ -64,7 +64,7 @@ router.post("/:chatId/message", protect, async (req, res) => {
         res.status(200).json(chat);
     } catch (error) {
         console.error("Message Send Error:", error.message);
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: "Internal server error" });
     }
 });
 
